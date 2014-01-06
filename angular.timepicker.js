@@ -84,9 +84,9 @@ angular.module('dnTimePicker', ['ui.bootstrap'])
                 }
 
                 // Local variables
-                var minTime = scope.stringToDate(attrs.minTime) || scope.stringToDate('00:00'),
-                    maxTime = scope.stringToDate(attrs.maxTime) || scope.stringToDate('23:59'),
-                    step = stringToMinutes(attrs.step || '15m'),
+                var minTime,
+                    maxTime,
+                    step,
                     current = null;
 
                 scope.timepicker = {
@@ -94,8 +94,17 @@ angular.module('dnTimePicker', ['ui.bootstrap'])
                     timeFormat: attrs.timeFormat || 'h:mm a',
                     isOpen: false,
                     activeIdx: -1,
-                    optionList: scope.buildTimeList(minTime, maxTime, step)
+                    optionList: []
                 };
+                
+                // Generate the list of available options in the dropdown
+                scope.refreshOptionList = function() {
+                    minTime = scope.stringToDate(attrs.minTime) || scope.stringToDate('00:00');
+                    maxTime = scope.stringToDate(attrs.maxTime) || scope.stringToDate('23:59');
+                    step = stringToMinutes(attrs.step || '15m');
+                    scope.timepicker.optionList = scope.buildTimeList(minTime, maxTime, step);
+                }
+                scope.refreshOptionList();
 
                 // Select action handler
                 // (int) index
@@ -177,6 +186,22 @@ angular.module('dnTimePicker', ['ui.bootstrap'])
                         scope.$apply();
                     }
                 });
+                
+                if(attrs.step) {
+                    attrs.$observe("step", function(value) {
+                        scope.refreshOptionList();
+                    });
+                }
+                if(attrs.minTime) {
+                    attrs.$observe("minTime", function(value) {
+                        scope.refreshOptionList();
+                    });
+                }
+                if(attrs.maxTime) {
+                    attrs.$observe("maxTime", function(value) {
+                        scope.refreshOptionList();
+                    });
+                }
 
                 // Append timepicker dropdown
                 element.after($compile(angular.element('<dn-timepicker-popup></dn-timepicker-popup>'))(scope));
