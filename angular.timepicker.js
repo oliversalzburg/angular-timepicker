@@ -115,8 +115,9 @@ angular.module('dnTimePicker', ['ui.bootstrap'])
                 };
 
                 ngModel.$render = function() {
-                    var timeString = ngModel.$viewValue ? $filter('date')(ngModel.$viewValue, scope.timepicker.timeFormat) : '';
+                    var timeString = ngModel.$modelValue ? $filter('date')(ngModel.$modelValue, scope.timepicker.timeFormat) : '';
                     element.val(timeString);
+                    ngModel.$setViewValue(timeString);
                 }
 
                 // Checks for current active item
